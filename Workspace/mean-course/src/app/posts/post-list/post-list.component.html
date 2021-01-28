@@ -3,9 +3,11 @@
     <mat-expansion-panel-header>
         {{ post.title }}
       </mat-expansion-panel-header>
-      <p>
-        {{ post.content }}
-      </p>
+      <p>{{ post.content }}</p>
+      <mat-action-row>
+        <button mat-button color="primary">Edit</button>
+        <button mat-button color="warn">Delete</button>
+      </mat-action-row>
   </mat-expansion-panel>
   </mat-accordion>
   <!-- mat-body-1 => https://material.angular.io/guide/typography -->
