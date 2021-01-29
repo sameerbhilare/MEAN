@@ -74,7 +74,10 @@ export class PostsService {
 
   getPost(postId: string) {
     // send a copy
-    return { ...this.posts.find((post) => post.id === postId) };
+    // return { ...this.posts.find((post) => post.id === postId) };
+    return this.http.get<{ _id: string; title: string; content: string }>(
+      'http://localhost:3000/api/posts/' + postId
+    );
   }
 
   deletePost(postId: string) {

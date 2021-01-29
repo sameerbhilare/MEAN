@@ -62,6 +62,18 @@ app.put("/api/posts/:id", (req, res, next) => {
   });
 });
 
+// GET a post
+app.get("/api/posts/:id", (req, res, next) => {
+  // fetch all posts from DB
+  Post.findById(req.params.id).then((post) => {
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).json("Post Not Found !");
+    }
+  });
+});
+
 // GET - get all psots
 app.get("/api/posts", (req, res, next) => {
   // fetch all posts from DB
