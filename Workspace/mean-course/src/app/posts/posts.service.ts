@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Post } from './post.model';
@@ -8,7 +9,7 @@ import { Post } from './post.model';
   providedIn: 'root',
 })
 export class PostsService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   private posts: Post[] = [];
 
@@ -51,6 +52,8 @@ export class PostsService {
         post.id = responseData.postId;
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
+        // navigate
+        this.router.navigate(['/']);
       });
   }
 
@@ -69,6 +72,8 @@ export class PostsService {
         this.posts = updatedPosts;
         // broadcast
         this.postsUpdated.next([...this.posts]);
+        // navigate
+        this.router.navigate(['/']);
       });
   }
 
