@@ -60,6 +60,15 @@ export class PostsService {
       .put('http://localhost:3000/api/posts/' + id, post)
       .subscribe(() => {
         console.log('Post updated!');
+        // update the post at client (Not required if on your current page, we are not showing posts)
+        const updatedPosts = [...this.posts];
+        const updatedPostIndex = updatedPosts.findIndex(
+          (p) => p.id === post.id
+        );
+        updatedPosts[updatedPostIndex] = post;
+        this.posts = updatedPosts;
+        // broadcast
+        this.postsUpdated.next([...this.posts]);
       });
   }
 
