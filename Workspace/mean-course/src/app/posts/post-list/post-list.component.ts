@@ -18,15 +18,19 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   postsUpdatedSubscription: Subscription;
 
+  isLoading: boolean = false;
+
   constructor(private postsService: PostsService) {}
 
   ngOnInit() {
     // initial fetch
+    this.isLoading = true;
     this.postsService.getPosts();
     this.postsUpdatedSubscription = this.postsService
       .getPostsUpdatedListener()
       .subscribe((posts: Post[]) => {
         this.posts = posts;
+        this.isLoading = false;
       });
   }
 
