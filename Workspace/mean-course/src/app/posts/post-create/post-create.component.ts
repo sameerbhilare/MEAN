@@ -15,6 +15,7 @@ export class PostCreateComponent implements OnInit {
   post: Post;
   postId: string;
   isLoading: boolean = false;
+  imagePreview: string;
 
   postForm: FormGroup;
 
@@ -84,7 +85,13 @@ export class PostCreateComponent implements OnInit {
     const file = (event.target as HTMLInputElement).files[0];
     this.postForm.patchValue({ image: file });
     this.postForm.updateValueAndValidity();
-    console.log(file);
-    console.log(this.postForm);
+
+    // image preview
+    const reader = new FileReader(); // https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+    // 'onload' will be called once it is done reading the file
+    reader.onload = () => {
+      this.imagePreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 }
