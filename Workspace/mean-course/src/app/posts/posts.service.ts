@@ -54,6 +54,20 @@ export class PostsService {
       });
   }
 
+  updatePost(id: string, title: string, content: string) {
+    const post: Post = { id, title, content };
+    this.http
+      .put('http://localhost:3000/api/posts/' + id, post)
+      .subscribe(() => {
+        console.log('Post updated!');
+      });
+  }
+
+  getPost(postId: string) {
+    // send a copy
+    return { ...this.posts.find((post) => post.id === postId) };
+  }
+
   deletePost(postId: string) {
     this.http
       .delete('http://localhost:3000/api/posts/' + postId)

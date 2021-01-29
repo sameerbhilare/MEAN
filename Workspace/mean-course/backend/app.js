@@ -50,6 +50,18 @@ app.post("/api/posts", (req, res, next) => {
   });
 });
 
+// UPDATE a post
+app.put("/api/posts/:id", (req, res, next) => {
+  Post.updateOne(
+    { _id: req.params.id },
+    { title: req.body.title, content: req.body.content }
+  ).then(() => {
+    res.status(200).json({
+      message: "Post updated successfully.",
+    });
+  });
+});
+
 // GET - get all psots
 app.get("/api/posts", (req, res, next) => {
   // fetch all posts from DB
