@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Post } from '../post.model';
 
@@ -16,12 +16,22 @@ export class PostCreateComponent implements OnInit {
   postId: string;
   isLoading: boolean = false;
 
+  postForm: FormGroup;
+
   constructor(
     private postsService: PostsService,
     private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit() {
+    // initialize the form
+    this.postForm = new FormGroup({
+      title: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)],
+      }),
+      content: new FormControl(null, { validators: [Validators.required] }),
+    });
+
     this.activatedRoute.paramMap.subscribe((paramMap: ParamMap) => {
       // 'postId' is defined in AppRoutingModule routes
       if (paramMap.has('postId')) {
@@ -35,6 +45,10 @@ export class PostCreateComponent implements OnInit {
             content: postData.content,
           };
           this.isLoading = false;
+          this.postForm.setValue({
+            title: postData.title,
+            content: postData.content,
+          });
         });
       } else {
         this.mode = 'create';
@@ -43,22 +57,25 @@ export class PostCreateComponent implements OnInit {
     });
   }
 
-  onSavePost(postForm: NgForm) {
-    if (postForm.invalid) {
+  onSavePost() {
+    if (this.postForm.invalid) {
       return;
     }
     this.isLoading = true;
     if (this.mode === 'create') {
-      this.postsService.addPost(postForm.value.title, postForm.value.content);
+      this.postsService.addPost(
+        this.postForm.value.title,
+        this.postForm.value.content
+      );
     } else {
       this.postsService.updatePost(
         this.postId,
-        postForm.value.title,
-        postForm.value.content
+        this.postForm.value.title,
+        this.postForm.value.content
       );
     }
     this.isLoading = false;
     // reset the form
-    postForm.resetForm();
+    this.postForm.reset();
   }
 }
