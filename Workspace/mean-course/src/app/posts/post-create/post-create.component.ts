@@ -30,6 +30,7 @@ export class PostCreateComponent implements OnInit {
         validators: [Validators.required, Validators.minLength(3)],
       }),
       content: new FormControl(null, { validators: [Validators.required] }),
+      image: new FormControl(null, { validators: [Validators.required] }),
     });
 
     this.activatedRoute.paramMap.subscribe((paramMap: ParamMap) => {
@@ -77,5 +78,13 @@ export class PostCreateComponent implements OnInit {
     this.isLoading = false;
     // reset the form
     this.postForm.reset();
+  }
+
+  onImagePickup(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.postForm.patchValue({ image: file });
+    this.postForm.updateValueAndValidity();
+    console.log(file);
+    console.log(this.postForm);
   }
 }
