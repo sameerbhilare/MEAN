@@ -39,17 +39,25 @@ export class PostsService {
       });
   }
 
-  addPost(title: string, content: string) {
-    const post: Post = { id: null, title, content };
+  addPost(title: string, content: string, file: File) {
+    // FormData allows us to combine form/text values and blobs
+    const postData = new FormData();
+    postData.append('title', title);
+    postData.append('content', content);
+    postData.append('image', file, title); // title - name of the file
 
     this.http
       .post<{ message: string; postId: string }>(
         'http://localhost:3000/api/posts',
-        post
+        postData
       )
       .subscribe((responseData) => {
         console.log(responseData.message);
-        post.id = responseData.postId;
+        const post = {
+          id: responseData.postId,
+          title,
+          content,
+        };
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
         // navigate
