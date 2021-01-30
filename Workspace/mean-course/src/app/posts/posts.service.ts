@@ -67,17 +67,32 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string) {
-    const post: Post = { id, title, content, imagePath: null };
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postData: FormData | Post;
+    if (typeof image === 'object') {
+      // this means image was updated, so create formdata
+      postData = new FormData();
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('content', content);
+      postData.append('image', image, title); // title - name of the file
+    } else {
+      postData = { id, title, content, imagePath: image };
+    }
+
     this.http
-      .put('http://localhost:3000/api/posts/' + id, post)
-      .subscribe(() => {
+      .put('http://localhost:3000/api/posts/' + id, postData)
+      .subscribe((responseData) => {
         console.log('Post updated!');
         // update the post at client (Not required if on your current page, we are not showing posts)
         const updatedPosts = [...this.posts];
-        const updatedPostIndex = updatedPosts.findIndex(
-          (p) => p.id === post.id
-        );
+        const updatedPostIndex = updatedPosts.findIndex((p) => p.id === id);
+        const post: Post = {
+          id,
+          title,
+          content,
+          imagePath: '',
+        };
         updatedPosts[updatedPostIndex] = post;
         this.posts = updatedPosts;
         // broadcast
@@ -90,9 +105,12 @@ export class PostsService {
   getPost(postId: string) {
     // send a copy
     // return { ...this.posts.find((post) => post.id === postId) };
-    return this.http.get<{ _id: string; title: string; content: string }>(
-      'http://localhost:3000/api/posts/' + postId
-    );
+    return this.http.get<{
+      _id: string;
+      title: string;
+      content: string;
+      imagePath: string;
+    }>('http://localhost:3000/api/posts/' + postId);
   }
 
   deletePost(postId: string) {

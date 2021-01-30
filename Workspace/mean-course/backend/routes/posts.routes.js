@@ -55,16 +55,27 @@ router.post(
 );
 
 // UPDATE a post
-router.put("/:id", (req, res, next) => {
-  Post.updateOne(
-    { _id: req.params.id },
-    { title: req.body.title, content: req.body.content }
-  ).then(() => {
-    res.status(200).json({
-      message: "Post updated successfully.",
+router.put(
+  "/:id",
+  multer({ storage: storage }).single("image"),
+  (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+      // if file was actually uploaded
+      const url = req.protocol + "://" + req.get("host");
+      imagePath = url + "/images/" + req.file.filename; // added by multer
+    }
+
+    Post.updateOne(
+      { _id: req.params.id },
+      { title: req.body.title, content: req.body.content, imagePath: imagePath }
+    ).then(() => {
+      res.status(200).json({
+        message: "Post updated successfully.",
+      });
     });
-  });
-});
+  }
+);
 
 // GET a post
 router.get("/:id", (req, res, next) => {
