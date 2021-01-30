@@ -22,6 +22,7 @@ const storage = multer.diskStorage({
     cb(error, "backend/images");
   },
 
+  // this filename will be set be multer and will be available at req.file.filename
   filename: (req, file, cb) => {
     const name = file.originalname.toLowerCase().split(" ").join("-");
     const ext = MIME_TYPES_MAP[file.mimetype];
@@ -34,15 +35,20 @@ router.post(
   "",
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
+    const url = req.protocol + "://" + req.get("host");
     const post = new Post({
       title: req.body.title,
       content: req.body.content,
+      imagePath: url + "/images/" + req.file.filename, // added by multer
     });
     // save to DB
     post.save().then((createdPost) => {
       res.status(201).json({
         message: "Post added successfully!",
-        postId: createdPost._id,
+        post: {
+          ...createdPost,
+          id: createdPost._id,
+        },
       });
     });
   }

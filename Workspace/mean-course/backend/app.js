@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./backend/config.env" });
@@ -20,6 +21,9 @@ mongoose
 // parser body
 app.use(bodyParser.json()); // for json body
 app.use(bodyParser.urlencoded()); // for url encoded body (html form)
+
+// static files
+app.use("/images", express.static(path.join("backend/images")));
 
 // cors
 app.use((req, res, next) => {

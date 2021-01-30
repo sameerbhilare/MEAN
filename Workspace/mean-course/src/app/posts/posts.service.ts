@@ -28,6 +28,7 @@ export class PostsService {
             return {
               title: post.title,
               content: post.content,
+              imagePath: post.imagePath,
               id: post._id, // tranforming "_id" to "id"
             };
           });
@@ -47,16 +48,17 @@ export class PostsService {
     postData.append('image', file, title); // title - name of the file
 
     this.http
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         'http://localhost:3000/api/posts',
         postData
       )
       .subscribe((responseData) => {
         console.log(responseData.message);
         const post = {
-          id: responseData.postId,
+          id: responseData.post.id,
           title,
           content,
+          imagePath: responseData.post.imagePath,
         };
         this.posts.push(post);
         this.postsUpdated.next([...this.posts]);
@@ -66,7 +68,7 @@ export class PostsService {
   }
 
   updatePost(id: string, title: string, content: string) {
-    const post: Post = { id, title, content };
+    const post: Post = { id, title, content, imagePath: null };
     this.http
       .put('http://localhost:3000/api/posts/' + id, post)
       .subscribe(() => {
