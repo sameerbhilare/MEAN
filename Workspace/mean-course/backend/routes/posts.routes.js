@@ -100,13 +100,20 @@ router.get("", (req, res, next) => {
     findQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
 
+  let fetchedPosts;
   // fetch all posts from DB
-  findQuery.then((posts) => {
-    res.status(200).json({
-      message: "Posts Fetched successfully",
-      posts: posts,
+  findQuery
+    .then((posts) => {
+      fetchedPosts = posts;
+      return Post.count();
+    })
+    .then((count) => {
+      res.status(200).json({
+        message: "Posts Fetched successfully",
+        posts: fetchedPosts,
+        totalPosts: count,
+      });
     });
-  });
 });
 
 // DELETE a post

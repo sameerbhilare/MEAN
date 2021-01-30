@@ -13,7 +13,7 @@ export class PostsService {
 
   private posts: Post[] = [];
 
-  private postsUpdated = new Subject<Post[]>();
+  private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   getPostsUpdatedListener() {
     return this.postsUpdated.asObservable();
@@ -22,24 +22,30 @@ export class PostsService {
   getPosts(postsPerPage: number, currentPage: number) {
     const queryParams = `?pageSize=${postsPerPage}&page=${currentPage}`;
     this.http
-      .get<{ message: string; posts: any }>(
+      .get<{ message: string; posts: any; totalPosts: number }>(
         'http://localhost:3000/api/posts' + queryParams
       )
       .pipe(
         map((postsResponse) => {
-          return postsResponse.posts.map((post) => {
-            return {
-              title: post.title,
-              content: post.content,
-              imagePath: post.imagePath,
-              id: post._id, // tranforming "_id" to "id"
-            };
-          });
+          return {
+            posts: postsResponse.posts.map((post) => {
+              return {
+                title: post.title,
+                content: post.content,
+                imagePath: post.imagePath,
+                id: post._id, // tranforming "_id" to "id"
+              };
+            }),
+            totalPosts: postsResponse.totalPosts,
+          };
         })
       )
-      .subscribe((transformedPosts) => {
-        this.posts = transformedPosts;
-        this.postsUpdated.next([...this.posts]);
+      .subscribe((transformedPostData) => {
+        this.posts = transformedPostData.posts;
+        this.postsUpdated.next({
+          posts: [...this.posts],
+          postCount: transformedPostData.totalPosts,
+        });
       });
   }
 
@@ -57,14 +63,6 @@ export class PostsService {
       )
       .subscribe((responseData) => {
         console.log(responseData.message);
-        const post = {
-          id: responseData.post.id,
-          title,
-          content,
-          imagePath: responseData.post.imagePath,
-        };
-        this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);
         // navigate
         this.router.navigate(['/']);
       });
@@ -87,19 +85,6 @@ export class PostsService {
       .put('http://localhost:3000/api/posts/' + id, postData)
       .subscribe((responseData) => {
         console.log('Post updated!');
-        // update the post at client (Not required if on your current page, we are not showing posts)
-        const updatedPosts = [...this.posts];
-        const updatedPostIndex = updatedPosts.findIndex((p) => p.id === id);
-        const post: Post = {
-          id,
-          title,
-          content,
-          imagePath: '',
-        };
-        updatedPosts[updatedPostIndex] = post;
-        this.posts = updatedPosts;
-        // broadcast
-        this.postsUpdated.next([...this.posts]);
         // navigate
         this.router.navigate(['/']);
       });
@@ -117,17 +102,6 @@ export class PostsService {
   }
 
   deletePost(postId: string) {
-    this.http
-      .delete('http://localhost:3000/api/posts/' + postId)
-      .subscribe(() => {
-        console.log(`Post with ID ${postId} Deleted!`);
-        // filter the deleted post
-        const updatedPosts = this.posts.filter((post) => {
-          return post.id !== postId;
-        });
-        this.posts = updatedPosts;
-        // broadcast
-        this.postsUpdated.next([...this.posts]);
-      });
+    return this.http.delete('http://localhost:3000/api/posts/' + postId);
   }
 }
