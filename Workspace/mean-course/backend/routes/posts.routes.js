@@ -91,8 +91,17 @@ router.get("/:id", (req, res, next) => {
 
 // GET - get all psots
 router.get("", (req, res, next) => {
+  const pageSize = +req.query.pageSize;
+  const currentPage = +req.query.page;
+
+  let findQuery = Post.find();
+
+  if (pageSize && currentPage) {
+    findQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+
   // fetch all posts from DB
-  Post.find().then((posts) => {
+  findQuery.then((posts) => {
     res.status(200).json({
       message: "Posts Fetched successfully",
       posts: posts,
