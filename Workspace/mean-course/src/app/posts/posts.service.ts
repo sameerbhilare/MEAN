@@ -43,7 +43,6 @@ export class PostsService {
       )
       .subscribe((transformedPostData) => {
         this.posts = transformedPostData.posts;
-        console.log(transformedPostData);
         this.postsUpdated.next({
           posts: [...this.posts],
           postCount: transformedPostData.totalPosts,
