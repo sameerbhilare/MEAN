@@ -26,7 +26,7 @@ router.post("/signup", (req, res, next) => {
       })
       .catch((err) => {
         res.status(500).json({
-          error: err,
+          message: "Invalid Email or Password.",
         });
       });
   });
@@ -39,7 +39,7 @@ router.post("/login", (req, res, next) => {
     .then((user) => {
       if (!user) {
         return res.status(401).json({
-          message: "Auth Failed",
+          message: "Invalid Email or Password.",
         });
       }
 
@@ -52,7 +52,7 @@ router.post("/login", (req, res, next) => {
       // result of bcrypt.compare()
       if (!result) {
         return res.status(401).json({
-          message: "Auth Failed",
+          message: "Invalid Email or Password.",
         });
       }
 
@@ -79,7 +79,7 @@ router.post("/login", (req, res, next) => {
     .catch((err) => {
       console.log(err);
       return res.status(401).json({
-        message: "Auth Failed",
+        message: "Invalid Email or Password.",
       });
     });
 });

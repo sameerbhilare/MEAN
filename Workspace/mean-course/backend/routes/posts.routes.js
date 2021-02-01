@@ -45,15 +45,22 @@ router.post(
       creator: req.userData.userId, // saved in the checkAuth middleware
     });
     // save to DB
-    post.save().then((createdPost) => {
-      res.status(201).json({
-        message: "Post added successfully!",
-        post: {
-          ...createdPost,
-          id: createdPost._id,
-        },
+    post
+      .save()
+      .then((createdPost) => {
+        res.status(201).json({
+          message: "Post added successfully!",
+          post: {
+            ...createdPost,
+            id: createdPost._id,
+          },
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({
+          message: "Creating a Post failed!",
+        });
       });
-    });
   }
 );
 
@@ -84,7 +91,10 @@ router.put(
           message: "Unauthorized",
         });
       }
-    });
+    }).catch((error) => {
+      res.status(500).json({
+        message: "Updating the Post failed!",
+      });;
   }
 );
 
@@ -97,7 +107,10 @@ router.get("/:id", (req, res, next) => {
     } else {
       res.status(404).json("Post Not Found !");
     }
-  });
+  }).catch((error) => {
+    res.status(500).json({
+      message: "Some problem while getting the Post!",
+    });
 });
 
 // GET - get all psots
@@ -124,7 +137,10 @@ router.get("", (req, res, next) => {
         posts: fetchedPosts,
         totalPosts: count,
       });
-    });
+    }).catch((error) => {
+      res.status(500).json({
+        message: "Fetching the Posts failed!",
+      });;
 });
 
 // DELETE a post
@@ -142,7 +158,10 @@ router.delete("/:id", checkAuth, (req, res, next) => {
         });
       }
     }
-  );
+  ).catch((error) => {
+    res.status(500).json({
+      message: "Deleting the Post failed!",
+    });;
 });
 
 module.exports = router;
