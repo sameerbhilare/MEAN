@@ -77,6 +77,7 @@ router.put(
       if (result.nModified > 0) {
         res.status(200).json({
           message: "Post updated successfully.",
+          creator: req.userData.userId, // saved in the checkAuth middleware
         });
       } else {
         res.status(401).json({

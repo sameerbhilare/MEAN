@@ -79,7 +79,7 @@ export class PostsService {
       postData.append('content', content);
       postData.append('image', image, title); // title - name of the file
     } else {
-      postData = { id, title, content, imagePath: image };
+      postData = { id, title, content, imagePath: image, creator: null };
     }
 
     this.http
@@ -99,6 +99,7 @@ export class PostsService {
       title: string;
       content: string;
       imagePath: string;
+      creator: string;
     }>('http://localhost:3000/api/posts/' + postId);
   }
 

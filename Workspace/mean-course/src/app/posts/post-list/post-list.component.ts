@@ -30,6 +30,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   authStatusListenerSubs: Subscription;
 
   isUserAuthenticated: boolean = false;
+  userId: string;
 
   constructor(
     private postsService: PostsService,
@@ -65,11 +66,13 @@ export class PostListComponent implements OnInit, OnDestroy {
       It triggers only on .next(value) call and return/output the value.
     */
     this.isUserAuthenticated = this.authService.isUserAuthenticated();
+    this.userId = this.authService.getUserId();
     // setup auth listner for latest changes
     this.authStatusListenerSubs = this.authService
       .getAuthStatusListener()
       .subscribe((isAuthenticated) => {
         this.isUserAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
       });
   }
 

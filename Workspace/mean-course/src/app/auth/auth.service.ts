@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   private token: string;
+  private userId: string;
   private isAuthenticated: boolean = false;
   timer: any;
 
@@ -22,6 +23,10 @@ export class AuthService {
 
   isUserAuthenticated() {
     return this.isAuthenticated;
+  }
+
+  getUserId() {
+    return this.userId;
   }
 
   getAuthStatusListener() {
@@ -40,7 +45,7 @@ export class AuthService {
   login(email: string, password: string) {
     const authData: AuthData = { email, password };
     this.http
-      .post<{ token: string; expiresIn: number }>(
+      .post<{ token: string; expiresIn: number; userId: string }>(
         'http://localhost:3000/api/user/login',
         authData
       )
@@ -49,7 +54,9 @@ export class AuthService {
         this.token = response.token;
         if (this.token) {
           this.isAuthenticated = true;
+          this.userId = response.userId;
           this.authStatusListener.next(true);
+
           const expiresIn = response.expiresIn;
           this.autoLogoutUserTimer(expiresIn);
 
@@ -58,7 +65,7 @@ export class AuthService {
             new Date().getTime() + expiresIn * 1000
           );
 
-          this.saveAuthData(this.token, expirationTime);
+          this.saveAuthData(this.token, expirationTime, this.userId);
 
           this.router.navigate(['/']);
         }
@@ -82,6 +89,7 @@ export class AuthService {
       // token is NOT expired yet
       this.token = authData.token;
       this.isAuthenticated = true;
+      this.userId = authData.userId;
       this.autoLogoutUserTimer(difference / 1000);
       this.authStatusListener.next(true);
     }
@@ -91,6 +99,7 @@ export class AuthService {
     console.log('logout');
     this.token = null;
     this.isAuthenticated = false;
+    this.userId = null;
     this.authStatusListener.next(false);
     this.clearAuthData();
     clearTimeout(this.timer);
@@ -110,8 +119,9 @@ export class AuthService {
    * But Angular prevents us against these by default
    * so we can't output script tags with Angular for example, so we should be safe .
    */
-  private saveAuthData(token: string, expirationTime: Date) {
+  private saveAuthData(token: string, expirationTime: Date, userId: string) {
     localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
     // NOT toString but toISoString which is serialized and standard style version of the date
     // which we then can use to recreate it.
     localStorage.setItem('expirationTime', expirationTime.toISOString());
@@ -119,6 +129,7 @@ export class AuthService {
 
   private getAuthData() {
     const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
     const expirationTimeStr = localStorage.getItem('expirationTime');
 
     if (!token || !expirationTimeStr) {
@@ -127,12 +138,14 @@ export class AuthService {
 
     return {
       token: token,
+      userId: userId,
       expirationTime: new Date(expirationTimeStr),
     };
   }
 
   private clearAuthData() {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     localStorage.removeItem('expirationTime');
   }
 }
