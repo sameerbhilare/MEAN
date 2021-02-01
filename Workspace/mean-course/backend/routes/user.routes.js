@@ -63,7 +63,17 @@ router.post("/login", (req, res, next) => {
         { expiresIn: "1h" }
       );
       // send token
-      res.status(200).json({ token: token });
+      /*
+        Send token expiry duration to frontend so that frontend can logout automatically.
+        We can send in whichever ways to fronend, e.g. in seconds, minutes, hrs, custom string,
+        but accordingly the frontend needs to take action.
+        Here we are sending it in seconds.
+        3600 seconds = 1h as we set expiresIn property for our JWT above.
+      */
+      res.status(200).json({
+        token: token,
+        expiresIn: 3600,
+      });
     })
     .catch((err) => {
       console.log(err);
