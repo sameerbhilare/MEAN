@@ -42,6 +42,7 @@ router.post(
       title: req.body.title,
       content: req.body.content,
       imagePath: url + "/images/" + req.file.filename, // added by multer
+      creator: req.userData.userId, // saved in the checkAuth middleware
     });
     // save to DB
     post.save().then((createdPost) => {

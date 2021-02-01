@@ -34,6 +34,7 @@ export class PostsService {
                 content: post.content,
                 imagePath: post.imagePath,
                 id: post._id, // tranforming "_id" to "id"
+                creator: post.creator,
               };
             }),
             totalPosts: postsResponse.totalPosts,
@@ -42,6 +43,7 @@ export class PostsService {
       )
       .subscribe((transformedPostData) => {
         this.posts = transformedPostData.posts;
+        console.log(transformedPostData);
         this.postsUpdated.next({
           posts: [...this.posts],
           postCount: transformedPostData.totalPosts,
