@@ -22,9 +22,11 @@ app.use(bodyParser.json()); // for json body
 app.use(bodyParser.urlencoded()); // for url encoded body (html form)
 
 // static files
-app.use("/images", express.static(path.join("backend/images")));
+app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/", express.static(path.join(__dirname, "angular")));
 
 // cors
+/*
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -37,9 +39,15 @@ app.use((req, res, next) => {
   );
   next();
 });
+*/
 
 // routes
 app.use("/api/posts", postsRoutes);
 app.use("/api/user", userRoutes);
+// last route to serve Angular page
+app.use((req, res, next) => {
+  console.log("path ", path.join(__dirname, "angular/index.html"));
+  res.sendFile(path.join(__dirname, "angular", "index.html"));
+});
 
 module.exports = app;
