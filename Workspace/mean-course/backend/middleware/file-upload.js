@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     if (!isValid) {
       error = new Error("Invalid mime type");
     }
-    cb(error, "backend/images");
+    cb(error, `${__dirname}/../images`); // path relative to the server.js file
   },
 
   // this filename will be set be multer and will be available at req.file.filename
