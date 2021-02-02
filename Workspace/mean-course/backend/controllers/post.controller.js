@@ -41,7 +41,7 @@ exports.updatePost = (req, res, next) => {
     { title: req.body.title, content: req.body.content, imagePath: imagePath }
   )
     .then((result) => {
-      if (result.nModified > 0) {
+      if (result.n > 0) {
         res.status(200).json({
           message: "Post updated successfully.",
           creator: req.userData.userId, // saved in the checkAuth middleware
