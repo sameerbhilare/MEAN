@@ -1,6 +1,4 @@
 const jwt = require("jsonwebtoken"); // required for creation and validation of JWT
-const dotenv = require("dotenv");
-dotenv.config({ path: "./backend/config.env" });
 
 module.exports = (req, res, next) => {
   try {

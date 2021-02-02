@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken"); // required for creation and validation of JWT
-const dotenv = require("dotenv");
-dotenv.config({ path: "./backend/config.env" });
 const User = require("../models/user");
 
 exports.createUser = (req, res, next) => {
