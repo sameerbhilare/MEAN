@@ -4,12 +4,15 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Post } from './post.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PostsService {
   constructor(private http: HttpClient, private router: Router) {}
+
+  BACKEND_URL = environment.apiURL + '/posts/';
 
   private posts: Post[] = [];
 
@@ -23,7 +26,7 @@ export class PostsService {
     const queryParams = `?pageSize=${postsPerPage}&page=${currentPage}`;
     this.http
       .get<{ message: string; posts: any; totalPosts: number }>(
-        'http://localhost:3000/api/posts' + queryParams
+        this.BACKEND_URL + queryParams
       )
       .pipe(
         map((postsResponse) => {
@@ -58,10 +61,7 @@ export class PostsService {
     postData.append('image', file, title); // title - name of the file
 
     this.http
-      .post<{ message: string; post: Post }>(
-        'http://localhost:3000/api/posts',
-        postData
-      )
+      .post<{ message: string; post: Post }>(this.BACKEND_URL, postData)
       .subscribe((responseData) => {
         console.log(responseData.message);
         // navigate
@@ -82,13 +82,11 @@ export class PostsService {
       postData = { id, title, content, imagePath: image, creator: null };
     }
 
-    this.http
-      .put('http://localhost:3000/api/posts/' + id, postData)
-      .subscribe((responseData) => {
-        console.log('Post updated!');
-        // navigate
-        this.router.navigate(['/']);
-      });
+    this.http.put(this.BACKEND_URL + id, postData).subscribe((responseData) => {
+      console.log('Post updated!');
+      // navigate
+      this.router.navigate(['/']);
+    });
   }
 
   getPost(postId: string) {
@@ -100,10 +98,10 @@ export class PostsService {
       content: string;
       imagePath: string;
       creator: string;
-    }>('http://localhost:3000/api/posts/' + postId);
+    }>(this.BACKEND_URL + postId);
   }
 
   deletePost(postId: string) {
-    return this.http.delete('http://localhost:3000/api/posts/' + postId);
+    return this.http.delete(this.BACKEND_URL + postId);
   }
 }
