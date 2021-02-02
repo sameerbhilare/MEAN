@@ -46,7 +46,6 @@ app.use("/api/posts", postsRoutes);
 app.use("/api/user", userRoutes);
 // last route to serve Angular page
 app.use((req, res, next) => {
-  console.log("path ", path.join(__dirname, "angular/index.html"));
   res.sendFile(path.join(__dirname, "angular", "index.html"));
 });
 
