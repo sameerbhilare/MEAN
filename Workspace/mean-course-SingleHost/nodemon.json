@@ -1,0 +1,6 @@
+{
+  "env": {
+    "DATABASE": "<replace with correct DB url as this SENSITIVE file should not be committed to github>",
+    "JWT_SECRET": "<replace with correct secret key>"
+  }
+}
