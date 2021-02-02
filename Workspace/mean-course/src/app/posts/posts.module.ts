@@ -9,5 +9,8 @@ import { CommonModule } from '@angular/common';
 @NgModule({
   declarations: [PostCreateComponent, PostListComponent],
   imports: [CommonModule, ReactiveFormsModule, AngularMaterialModule],
+  // dont put the services here in the providers array.
+  // it is better to mark the services with @Injectable and providedIn: 'root',
+  // this will avoid problems related to multiple instances of the Services.
 })
 export class PostsModule {}
